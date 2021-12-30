@@ -1,0 +1,12 @@
+﻿[
+  {
+    description: Test store 1,
+    id: 1,
+    name: Test
+  },
+  {
+    description: Test store 2,
+    id: 2,
+    name: Test
+  }
+]

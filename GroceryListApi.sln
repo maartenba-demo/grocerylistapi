@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryListApi", "GroceryListApi\GroceryListApi.csproj", "{449F1D7C-82B6-4172-BF2B-CC834165FD2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{80E4A06B-9626-4102-BE7E-617D5E1E4B12}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{95D00DD3-D73B-4FA1-AEE1-2AFC7FB49B1B}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroceryListApi.Tests", "GroceryListApi.Tests\GroceryListApi.Tests.csproj", "{AF6D970D-0E5B-49B1-90DF-F632AE5E91B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{449F1D7C-82B6-4172-BF2B-CC834165FD2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{449F1D7C-82B6-4172-BF2B-CC834165FD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{449F1D7C-82B6-4172-BF2B-CC834165FD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{449F1D7C-82B6-4172-BF2B-CC834165FD2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF6D970D-0E5B-49B1-90DF-F632AE5E91B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF6D970D-0E5B-49B1-90DF-F632AE5E91B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF6D970D-0E5B-49B1-90DF-F632AE5E91B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF6D970D-0E5B-49B1-90DF-F632AE5E91B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{95D00DD3-D73B-4FA1-AEE1-2AFC7FB49B1B} = {80E4A06B-9626-4102-BE7E-617D5E1E4B12}
+	EndGlobalSection
+EndGlobal
