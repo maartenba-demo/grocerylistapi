@@ -8,11 +8,12 @@ using Xunit;
 
 namespace GroceryListApi.Tests.Endpoints.GroceryStoreEndpointsTests;
 
-public abstract class GroceryStoreEndpointsTests : IClassFixture<GroceryListApiApplicationFactory>
+[TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
+public abstract class GroceryStoreEndpointsTestsBase : IClassFixture<GroceryListApiApplicationFactory>
 {
     protected HttpClient Application { get; }
 
-    public GroceryStoreEndpointsTests(GroceryListApiApplicationFactory factory)
+    public GroceryStoreEndpointsTestsBase(GroceryListApiApplicationFactory factory)
     {
         Application = factory.CreateClient();
     }

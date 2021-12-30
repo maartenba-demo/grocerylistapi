@@ -5,24 +5,24 @@ using GroceryListApi.Endpoints.Schemas;
 using GroceryListApi.Tests.Infrastructure;
 using Xunit;
 
-namespace GroceryListApi.Tests.Endpoints.GroceryStoreEndpointsTests;
+namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 
 [TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
-public class DeleteGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
+public class DeleteGroceryListItemEndpointsTestsBase : GroceryListItemEndpointsTestsBase
 {
-    public DeleteGroceryStoreEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
+    public DeleteGroceryListItemEndpointsTestsBase(GroceryListApiApplicationFactory factory) : base(factory) { }
     
     [Fact]
     public async Task Returns200()
     {
         // Arrange
         await EnsureAuthorizedAsync();
-        var createdStoreResult = await Application.PostAsJsonAsync("/stores", 
-            new ApiStore(null, "Test store", "This is a test store"));
-        var createdStore = createdStoreResult.Content.ReadFromJsonAsync<ApiStore>();
+        var createdItemResult = await Application.PostAsJsonAsync("/stores/1/items", 
+            new ApiItem(null, null, "Test item", true));
+        var createdItem = await createdItemResult.Content.ReadFromJsonAsync<ApiItem>();
         
         // Act
-        var result = await Application.DeleteAsync($"/stores/{createdStore.Id}");
+        var result = await Application.DeleteAsync($"/stores/1/items/{createdItem!.Id}");
         
         // Assert
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -35,7 +35,7 @@ public class DeleteGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
         await EnsureAuthorizedAsync();
         
         // Act
-        var result = await Application.DeleteAsync("/stores/123");
+        var result = await Application.DeleteAsync("/stores/1/items/123");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);

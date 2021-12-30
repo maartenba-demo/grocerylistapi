@@ -24,6 +24,7 @@ app.UseAuthorization();
 
 app.MapAuthenticationEndpoints();
 app.MapGroceryStoreEndpoints();
+app.MapGroceryListItemEndpoints();
 
 app.Run();
 

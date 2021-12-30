@@ -8,6 +8,7 @@ using Xunit;
 
 namespace GroceryListApi.Tests.Endpoints;
 
+[TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
 public class TokenEndpointsTests : IClassFixture<GroceryListApiApplicationFactory>
 {
     private HttpClient Application { get; }

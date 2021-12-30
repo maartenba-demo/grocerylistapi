@@ -1,0 +1,6 @@
+﻿{
+  id: 4,
+  isComplete: false,
+  storeId: 1,
+  title: Test item
+}

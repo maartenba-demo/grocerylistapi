@@ -9,7 +9,8 @@ using Xunit;
 namespace GroceryListApi.Tests.Endpoints.GroceryStoreEndpointsTests;
 
 [UsesVerify]
-public class UpdateGroceryStoreEndpointsTests : GroceryStoreEndpointsTests
+[TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
+public class UpdateGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
 {
     public UpdateGroceryStoreEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
     
@@ -38,12 +39,9 @@ public class UpdateGroceryStoreEndpointsTests : GroceryStoreEndpointsTests
     {
         // Arrange
         await EnsureAuthorizedAsync();
-        var createdStoreResult = await Application.PostAsJsonAsync("/stores", 
-            new ApiStore(null, "Test store", "This is a test store"));
-        var createdStore = createdStoreResult.Content.ReadFromJsonAsync<ApiStore>();
         
         // Act
-        var result = await Application.PutAsJsonAsync($"/stores/{createdStore.Id}", 
+        var result = await Application.PutAsJsonAsync($"/stores/1", 
             new ApiStore(null, title!, description));
         
         // Assert

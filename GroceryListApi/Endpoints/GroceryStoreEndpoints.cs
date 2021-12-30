@@ -21,7 +21,7 @@ public static class GroceryStoreEndpoints
             .Produces(401)
             .WithDisplayName("Get all stores");
         
-        app.MapGet("/stores/{id}", GetStore)
+        app.MapGet("/stores/{storeId}", GetStore)
             .RequireAuthorization()
             .WithTags(Tag)
             .Produces<ApiStore>(200)
@@ -30,7 +30,7 @@ public static class GroceryStoreEndpoints
             .WithName(ById)
             .WithDisplayName("Get a store by id");
         
-        app.MapDelete("/stores/{id}", DeleteStore)
+        app.MapDelete("/stores/{storeId}", DeleteStore)
             .RequireAuthorization()
             .WithTags(Tag)
             .Produces(200)
@@ -38,7 +38,7 @@ public static class GroceryStoreEndpoints
             .Produces(401)
             .WithDisplayName("Delete a store by id");
         
-        app.MapPut("/stores/{id}", UpdateStore)
+        app.MapPut("/stores/{storeId}", UpdateStore)
             .RequireAuthorization()
             .WithTags(Tag)
             .Produces<ApiStore>(200)
@@ -72,13 +72,13 @@ public static class GroceryStoreEndpoints
             new ApiStore(store.Id, store.Name, store.Description)));
     }
 
-    private static async Task<IResult> GetStore([FromRoute]int id, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<IResult> GetStore([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var store = await db.Stores
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
         if (store == null) return Results.NotFound();
         
@@ -86,12 +86,12 @@ public static class GroceryStoreEndpoints
             new ApiStore(store.Id, store.Name, store.Description));
     }
 
-    private static async Task<IResult> DeleteStore([FromRoute]int id, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<IResult> DeleteStore([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var store = await db.Stores
-            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
         if (store == null) return Results.NotFound();
 
@@ -101,12 +101,12 @@ public static class GroceryStoreEndpoints
         return Results.Ok();
     }
 
-    private static async Task<IResult> UpdateStore([FromRoute]int id, [FromBody]ApiStore apiStore, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
+    private static async Task<IResult> UpdateStore([FromRoute]int storeId, [FromBody]ApiStore apiStore, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var store = await db.Stores
-            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
         if (store == null) return Results.NotFound();
         
@@ -120,7 +120,7 @@ public static class GroceryStoreEndpoints
         await db.SaveChangesAsync();
 
         return Results.Accepted(
-            link.GetUriByName(http, ById, new { id = store.Id })!, 
+            link.GetUriByName(http, ById, new { storeId = store.Id })!, 
             new ApiStore(store.Id, store.Name, store.Description));
     }
 
@@ -142,7 +142,7 @@ public static class GroceryStoreEndpoints
         await db.SaveChangesAsync();
 
         return Results.Created(
-            link.GetUriByName(http, ById, new { id = store.Id })!, 
+            link.GetUriByName(http, ById, new { storeId = store.Id })!, 
             new ApiStore(store.Id, store.Name, store.Description));
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using GroceryListApi.Database;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -11,7 +12,8 @@ namespace GroceryListApi.Tests.Infrastructure;
 [UsedImplicitly]
 public class GroceryListApiApplicationFactory : WebApplicationFactory<Program>
 {
-    private static object _dbLock = new();
+    private readonly object _dbLock = new();
+    private readonly string _dbName = Guid.NewGuid().ToString();
     
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -24,7 +26,7 @@ public class GroceryListApiApplicationFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<GroceryListDb>(options =>
             {
-                options.UseInMemoryDatabase("InMemoryDatabase");
+                options.UseInMemoryDatabase(_dbName);
             });
         });
  

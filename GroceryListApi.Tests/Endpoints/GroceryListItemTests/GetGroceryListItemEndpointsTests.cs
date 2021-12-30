@@ -4,13 +4,13 @@ using GroceryListApi.Tests.Infrastructure;
 using VerifyXunit;
 using Xunit;
 
-namespace GroceryListApi.Tests.Endpoints.GroceryStoreEndpointsTests;
+namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 
 [UsesVerify]
 [TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
-public class GetGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
+public class GetGroceryListItemEndpointsTestsBase : GroceryListItemEndpointsTestsBase
 {
-    public GetGroceryStoreEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
+    public GetGroceryListItemEndpointsTestsBase(GroceryListApiApplicationFactory factory) : base(factory) { }
     
     [Fact]
     public async Task Returns200()
@@ -19,7 +19,7 @@ public class GetGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
         await EnsureAuthorizedAsync();
         
         // Act
-        var result = await Application.GetAsync("/stores/1");
+        var result = await Application.GetAsync("/stores/1/items/1");
         
         // Assert
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -33,7 +33,7 @@ public class GetGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
         await EnsureAuthorizedAsync();
         
         // Act
-        var result = await Application.GetAsync("/stores/123");
+        var result = await Application.GetAsync("/stores/123/items/123");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);

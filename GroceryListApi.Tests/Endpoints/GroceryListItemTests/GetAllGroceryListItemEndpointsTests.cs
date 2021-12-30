@@ -4,13 +4,13 @@ using GroceryListApi.Tests.Infrastructure;
 using VerifyXunit;
 using Xunit;
 
-namespace GroceryListApi.Tests.Endpoints.GroceryStoreEndpointsTests;
+namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 
 [UsesVerify]
 [TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
-public class GetAllGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
+public class GetAllGroceryListItemEndpointsTestsBase : GroceryListItemEndpointsTestsBase
 {
-    public GetAllGroceryStoreEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
+    public GetAllGroceryListItemEndpointsTestsBase(GroceryListApiApplicationFactory factory) : base(factory) { }
     
     [Fact]
     public async Task Returns200()
@@ -19,7 +19,7 @@ public class GetAllGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
         await EnsureAuthorizedAsync();
         
         // Act
-        var result = await Application.GetAsync("/stores");
+        var result = await Application.GetAsync("/stores/1/items");
         
         // Assert
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);

@@ -1,0 +1,14 @@
+﻿[
+  {
+    id: 1,
+    isComplete: true,
+    storeId: 1,
+    title: Test 1-1
+  },
+  {
+    id: 2,
+    isComplete: false,
+    storeId: 1,
+    title: Test 1-2
+  }
+]

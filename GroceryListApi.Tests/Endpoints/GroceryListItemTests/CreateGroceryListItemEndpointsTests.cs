@@ -6,13 +6,13 @@ using GroceryListApi.Tests.Infrastructure;
 using VerifyXunit;
 using Xunit;
 
-namespace GroceryListApi.Tests.Endpoints.GroceryStoreEndpointsTests;
+namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 
 [UsesVerify]
 [TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
-public class CreateGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
+public class CreateGroceryListItemEndpointsTestsBase : GroceryListItemEndpointsTestsBase
 {
-    public CreateGroceryStoreEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
+    public CreateGroceryListItemEndpointsTestsBase(GroceryListApiApplicationFactory factory) : base(factory) { }
     
     [Fact]
     public async Task Returns201()
@@ -21,8 +21,8 @@ public class CreateGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
         await EnsureAuthorizedAsync();
         
         // Act
-        var result = await Application.PostAsJsonAsync("/stores", 
-            new ApiStore(null, "Test store", "This is a test store"));
+        var result = await Application.PostAsJsonAsync("/stores/1/items", 
+            new ApiItem(null, null, "Test item", false));
         
         // Assert
         Assert.Equal(HttpStatusCode.Created, result.StatusCode);
@@ -30,16 +30,16 @@ public class CreateGroceryStoreEndpointsTests : GroceryStoreEndpointsTestsBase
     }
     
     [Theory]
-    [InlineData("", "")]
-    [InlineData(null, null)]
-    public async Task Returns400ForInvalidModel(string? title, string? description)
+    [InlineData("")]
+    [InlineData(null)]
+    public async Task Returns400ForInvalidModel(string? title)
     {
         // Arrange
         await EnsureAuthorizedAsync();
         
         // Act
-        var result = await Application.PostAsJsonAsync("/stores", 
-            new ApiStore(null, title!, description));
+        var result = await Application.PostAsJsonAsync("/stores/1/items",  
+            new ApiItem(null, null, title!, true));
         
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
