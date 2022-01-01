@@ -1,0 +1,28 @@
+﻿{
+  Version: 1.1,
+  StatusCode: Created,
+  IsSuccessStatusCode: true,
+  ReasonPhrase: Created,
+  Headers: {
+    Location: http://localhost/stores/1/items/4
+  },
+  Content: {
+    Headers: {
+      Content-Type: application/json; charset=utf-8
+    },
+    Value: {
+      id: 4,
+      isComplete: false,
+      storeId: 1,
+      title: Test item
+    }
+  },
+  Request: {
+    Version: 1.1,
+    Method: {
+      Method: POST
+    },
+    Uri: http://localhost/stores/1/items,
+    Headers: {}
+  }
+}
