@@ -10,9 +10,9 @@ namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 
 [UsesVerify]
 [TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
-public class CreateGroceryListItemEndpointsTestsBase : GroceryListItemEndpointsTestsBase
+public class CreateGroceryListItemEndpointsTests : GroceryListItemEndpointsTestsBase
 {
-    public CreateGroceryListItemEndpointsTestsBase(GroceryListApiApplicationFactory factory) : base(factory) { }
+    public CreateGroceryListItemEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
     
     [Fact]
     public async Task Returns201()
