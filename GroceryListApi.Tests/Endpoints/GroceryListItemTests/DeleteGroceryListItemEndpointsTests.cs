@@ -8,9 +8,9 @@ using Xunit;
 namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 
 [TestCaseOrderer("GroceryListApi.Tests.Infrastructure.AlphabeticalTestCaseOrderer", "GroceryListApi.Tests")]
-public class DeleteGroceryListItemEndpointsTestsBase : GroceryListItemEndpointsTestsBase
+public class DeleteGroceryListItemEndpointsTests : GroceryListItemEndpointsTestsBase
 {
-    public DeleteGroceryListItemEndpointsTestsBase(GroceryListApiApplicationFactory factory) : base(factory) { }
+    public DeleteGroceryListItemEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
     
     [Fact]
     public async Task Returns200()
