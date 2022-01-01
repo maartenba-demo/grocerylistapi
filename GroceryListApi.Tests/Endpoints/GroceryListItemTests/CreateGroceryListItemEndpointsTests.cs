@@ -13,22 +13,21 @@ namespace GroceryListApi.Tests.Endpoints.GroceryListItemTests;
 public class CreateGroceryListItemEndpointsTests : GroceryListItemEndpointsTestsBase
 {
     public CreateGroceryListItemEndpointsTests(GroceryListApiApplicationFactory factory) : base(factory) { }
-    
+
     [Fact]
     public async Task Returns201()
     {
         // Arrange
         await EnsureAuthorizedAsync();
-        
+
         // Act
-        var result = await Application.PostAsJsonAsync("/stores/1/items", 
+        var result = await Application.PostAsJsonAsync("/stores/1/items",
             new ApiItem(null, null, "Test item", false));
-        
+
         // Assert
-        Assert.Equal(HttpStatusCode.Created, result.StatusCode);
-        await Verifier.VerifyJson(await result.Content.ReadAsStringAsync());
+        await Verifier.Verify(result);
     }
-    
+
     [Theory]
     [InlineData("")]
     [InlineData(null)]
@@ -36,11 +35,11 @@ public class CreateGroceryListItemEndpointsTests : GroceryListItemEndpointsTests
     {
         // Arrange
         await EnsureAuthorizedAsync();
-        
+
         // Act
-        var result = await Application.PostAsJsonAsync("/stores/1/items",  
+        var result = await Application.PostAsJsonAsync("/stores/1/items",
             new ApiItem(null, null, title!, true));
-        
+
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
     }
