@@ -1,6 +1,6 @@
 ﻿{
   id: 4,
-  isComplete: true,
   storeId: 1,
-  title: Updated title
+  title: Updated title,
+  isComplete: true
 }
