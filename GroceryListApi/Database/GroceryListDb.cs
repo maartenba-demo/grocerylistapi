@@ -26,6 +26,44 @@ public class GroceryListDb : DbContext
             .HasMany(s => s.Items)
             .WithOne(i => i.Store)
             .HasForeignKey(i => i.StoreId);
+
+        // Seed data
+        modelBuilder.Entity<User>()
+            .HasData(new User
+            {
+                Id = 1,
+                Username = "test",
+                Name = "Test user",
+                Email = "test@example.org"
+            });
+
+        modelBuilder.Entity<GroceryStore>()
+            .HasData(new GroceryStore
+            {
+                Id = 1,
+                UserId = 1,
+                Name = "Example Groceries Inc.",
+                Description = "An example grocery store."
+            });
+
+        modelBuilder.Entity<GroceryListItem>()
+            .HasData(
+                new GroceryListItem
+                {
+                    Id = 1,
+                    UserId = 1,
+                    StoreId = 1,
+                    Title = "Potatoes",
+                    IsComplete = false
+                },
+                    new GroceryListItem
+                {
+                    Id = 2,
+                    UserId = 1,
+                    StoreId = 1,
+                    Title = "Tomatoes",
+                    IsComplete = false
+                });
     }
 
     public DbSet<User> Users => Set<User>();
