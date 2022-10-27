@@ -14,42 +14,36 @@ public static class GroceryStoreEndpoints
 
     public static WebApplication MapGroceryStoreEndpoints(this WebApplication app)
     {
-        app.MapGet("/stores", GetAllStores)
+        var routes = app.MapGroup("/stores")
             .RequireAuthorization()
-            .WithTags(Tag)
+            .WithTags(Tag);
+
+        routes.MapGet("/", GetAllStores)
             .Produces<ICollection<ApiStore>>(200)
             .Produces(401)
             .WithDisplayName("Get all stores");
         
-        app.MapGet("/stores/{storeId}", GetStore)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapGet("/{storeId}", GetStore)
             .Produces<ApiStore>(200)
             .Produces(404)
             .Produces(401)
             .WithName(ById)
             .WithDisplayName("Get a store by id");
         
-        app.MapDelete("/stores/{storeId}", DeleteStore)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapDelete("/{storeId}", DeleteStore)
             .Produces(200)
             .Produces(404)
             .Produces(401)
             .WithDisplayName("Delete a store by id");
         
-        app.MapPut("/stores/{storeId}", UpdateStore)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapPut("/{storeId}", UpdateStore)
             .Produces<ApiStore>(200)
             .ProducesValidationProblem(400)
             .Produces(404)
             .Produces(401)
             .WithDisplayName("Update a store by id");
         
-        app.MapPost("/stores", CreateStore)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapPost("/", CreateStore)
             .Accepts<ApiStore>("application/json")
             .Produces<ApiStore>(201)
             .ProducesValidationProblem(400)

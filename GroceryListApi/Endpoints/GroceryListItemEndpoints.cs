@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using GroceryListApi.Endpoints.Schemas;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniValidation;
@@ -14,42 +13,36 @@ public static class GroceryListItemEndpoints
 
     public static WebApplication MapGroceryListItemEndpoints(this WebApplication app)
     {
-        app.MapGet("/stores/{storeId}/items", GetAllItems)
+        var routes = app.MapGroup("/stores/{storeId}")
             .RequireAuthorization()
-            .WithTags(Tag)
+            .WithTags(Tag);
+
+        routes.MapGet("/items", GetAllItems)
             .Produces<ICollection<ApiItem>>(200)
             .Produces(401)
             .WithDisplayName("Get all items for a store");
         
-        app.MapGet("/stores/{storeId}/items/{itemId}", GetItem)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapGet("/items/{itemId}", GetItem)
             .Produces<ApiItem>(200)
             .Produces(404)
             .Produces(401)
             .WithName(ById)
             .WithDisplayName("Get an item by id");
         
-        app.MapDelete("/stores/{storeId}/items/{itemId}", DeleteItem)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapDelete("/items/{itemId}", DeleteItem)
             .Produces(200)
             .Produces(404)
             .Produces(401)
             .WithDisplayName("Delete an item by id");
         
-        app.MapPut("/stores/{storeId}/items/{itemId}", UpdateItem)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapPut("/items/{itemId}", UpdateItem)
             .Produces<ApiItem>(200)
             .ProducesValidationProblem(400)
             .Produces(404)
             .Produces(401)
             .WithDisplayName("Update an item by id");
         
-        app.MapPost("/stores/{storeId}/items", CreateItem)
-            .RequireAuthorization()
-            .WithTags(Tag)
+        routes.MapPost("/items", CreateItem)
             .Accepts<ApiItem>("application/json")
             .Produces<ApiItem>(201)
             .ProducesValidationProblem(400)
