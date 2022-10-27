@@ -23,20 +23,20 @@ public static class GroceryStoreEndpoints
             .Produces(401)
             .WithDisplayName("Get all stores");
         
-        routes.MapGet("/{storeId}", GetStore)
+        routes.MapGet("/{storeId:int}", GetStore)
             .Produces<ApiStore>(200)
             .Produces(404)
             .Produces(401)
             .WithName(ById)
             .WithDisplayName("Get a store by id");
         
-        routes.MapDelete("/{storeId}", DeleteStore)
+        routes.MapDelete("/{storeId:int}", DeleteStore)
             .Produces(200)
             .Produces(404)
             .Produces(401)
             .WithDisplayName("Delete a store by id");
         
-        routes.MapPut("/{storeId}", UpdateStore)
+        routes.MapPut("/{storeId:int}", UpdateStore)
             .Produces<ApiStore>(200)
             .ProducesValidationProblem(400)
             .Produces(404)

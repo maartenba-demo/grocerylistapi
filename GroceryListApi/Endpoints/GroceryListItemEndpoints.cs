@@ -13,7 +13,7 @@ public static class GroceryListItemEndpoints
 
     public static WebApplication MapGroceryListItemEndpoints(this WebApplication app)
     {
-        var routes = app.MapGroup("/stores/{storeId}")
+        var routes = app.MapGroup("/stores/{storeId:int}")
             .RequireAuthorization()
             .WithTags(Tag);
 
