@@ -42,7 +42,7 @@ public static class AuthenticationEndpoints
                     expires: DateTime.UtcNow.AddDays(60),
                     notBefore: DateTime.UtcNow,
                     signingCredentials: new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SigningKey"])),
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SigningKey"] ?? throw new NullReferenceException("The value for 'SigningKey' must be specified in appsettings.json"))),
                         SecurityAlgorithms.HmacSha256)
                 );
 

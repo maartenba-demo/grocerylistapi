@@ -7,6 +7,6 @@ public static class ModuleInitializer
     public static void  Init()
     {
         VerifyHttp.Enable();
-        VerifierSettings.ModifySerialization(settings => settings.IgnoreMember("Authorization"));
+        VerifierSettings.IgnoreMember("Authorization");
     }
 }

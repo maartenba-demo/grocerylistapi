@@ -207,3 +207,4 @@ artifacts/
 
 # Database
 grocerylists.db*
+riderMarkupCache.xml
