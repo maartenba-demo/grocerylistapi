@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using GroceryListApi.Endpoints.Schemas;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniValidation;
@@ -18,41 +19,27 @@ public static class GroceryListItemEndpoints
             .WithTags(Tag);
 
         routes.MapGet("/items", GetAllItems)
-            .Produces<ICollection<ApiItem>>(200)
-            .Produces(401)
             .WithDisplayName("Get all items for a store");
         
         routes.MapGet("/items/{itemId}", GetItem)
-            .Produces<ApiItem>(200)
-            .Produces(404)
-            .Produces(401)
             .WithName(ById)
             .WithDisplayName("Get an item by id");
         
         routes.MapDelete("/items/{itemId}", DeleteItem)
-            .Produces(200)
-            .Produces(404)
-            .Produces(401)
             .WithDisplayName("Delete an item by id");
         
         routes.MapPut("/items/{itemId}", UpdateItem)
-            .Produces<ApiItem>(200)
-            .ProducesValidationProblem(400)
-            .Produces(404)
-            .Produces(401)
+            .Accepts<ApiItem>("application/json")
             .WithDisplayName("Update an item by id");
         
         routes.MapPost("/items", CreateItem)
             .Accepts<ApiItem>("application/json")
-            .Produces<ApiItem>(201)
-            .ProducesValidationProblem(400)
-            .Produces(401)
             .WithDisplayName("Create an item");
 
         return app;
     }
 
-    private static async Task<IResult> GetAllItems([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<Results<Ok<IEnumerable<ApiItem>>, Unauthorized>> GetAllItems([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
@@ -61,11 +48,11 @@ public static class GroceryListItemEndpoints
             .AsNoTracking()
             .ToListAsync();
         
-        return Results.Ok(items.Select(item => 
+        return TypedResults.Ok(items.Select(item =>
             new ApiItem(item.Id, item.StoreId, item.Title, item.IsComplete)));
     }
 
-    private static async Task<IResult> GetItem([FromRoute]int storeId, [FromRoute]int itemId, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<Results<Ok<ApiItem>, NotFound, Unauthorized>> GetItem([FromRoute]int storeId, [FromRoute]int itemId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
@@ -73,39 +60,39 @@ public static class GroceryListItemEndpoints
             .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId && i.StoreId == storeId);
 
-        if (item == null) return Results.NotFound();
+        if (item == null) return TypedResults.NotFound();
         
-        return Results.Ok(
+        return TypedResults.Ok(
             new ApiItem(item.Id, item.StoreId, item.Title, item.IsComplete));
     }
 
-    private static async Task<IResult> DeleteItem([FromRoute]int storeId, [FromRoute]int itemId, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<Results<Ok, NotFound, Unauthorized>> DeleteItem([FromRoute]int storeId, [FromRoute]int itemId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var item = await db.Items
             .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId && i.StoreId == storeId);
 
-        if (item == null) return Results.NotFound();
+        if (item == null) return TypedResults.NotFound();
 
         db.Items.Remove(item);
         await db.SaveChangesAsync();
         
-        return Results.Ok();
+        return TypedResults.Ok();
     }
 
-    private static async Task<IResult> UpdateItem([FromRoute]int storeId, [FromRoute]int itemId, [FromBody]ApiItem apiItem, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
+    private static async Task<Results<Accepted<ApiItem>, ValidationProblem, NotFound, Unauthorized>> UpdateItem([FromRoute]int storeId, [FromRoute]int itemId, [FromBody]ApiItem apiItem, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var item = await db.Items
             .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId && i.StoreId == storeId);
 
-        if (item == null) return Results.NotFound();
+        if (item == null) return TypedResults.NotFound();
         
         if (!MiniValidator.TryValidate(apiItem, out var validationErrors))
         {
-            return Results.ValidationProblem(validationErrors);
+            return TypedResults.ValidationProblem(validationErrors);
         }
 
         item.Title = apiItem.Title;
@@ -113,23 +100,23 @@ public static class GroceryListItemEndpoints
 
         await db.SaveChangesAsync();
 
-        return Results.Accepted(
+        return TypedResults.Accepted(
             link.GetUriByName(http, ById, new { storeId = item.StoreId, itemId = item.Id })!, 
             new ApiItem(item.Id, item.StoreId, item.Title, item.IsComplete));
     }
 
-    private static async Task<IResult> CreateItem([FromRoute]int storeId, [FromBody]ApiItem apiItem, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
+    private static async Task<Results<Created<ApiItem>, ValidationProblem, NotFound, Unauthorized>> CreateItem([FromRoute]int storeId, [FromBody]ApiItem apiItem, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
         
         var store = await db.Stores
             .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
-        if (store == null) return Results.NotFound();
+        if (store == null) return TypedResults.NotFound();
         
         if (!MiniValidator.TryValidate(apiItem, out var validationErrors))
         {
-            return Results.ValidationProblem(validationErrors);
+            return TypedResults.ValidationProblem(validationErrors);
         }
         
         var item = new GroceryListItem
@@ -142,7 +129,7 @@ public static class GroceryListItemEndpoints
         db.Items.Add(item);
         await db.SaveChangesAsync();
 
-        return Results.Created(
+        return TypedResults.Created(
             link.GetUriByName(http, ById, new { storeId = item.StoreId, itemId = item.Id })!, 
             new ApiItem(item.Id, item.StoreId, item.Title, item.IsComplete));
     }

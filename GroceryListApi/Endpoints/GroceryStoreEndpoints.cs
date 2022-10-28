@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using GroceryListApi.Endpoints.Schemas;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniValidation;
@@ -19,41 +20,27 @@ public static class GroceryStoreEndpoints
             .WithTags(Tag);
 
         routes.MapGet("/", GetAllStores)
-            .Produces<ICollection<ApiStore>>(200)
-            .Produces(401)
             .WithDisplayName("Get all stores");
         
         routes.MapGet("/{storeId:int}", GetStore)
-            .Produces<ApiStore>(200)
-            .Produces(404)
-            .Produces(401)
             .WithName(ById)
             .WithDisplayName("Get a store by id");
         
         routes.MapDelete("/{storeId:int}", DeleteStore)
-            .Produces(200)
-            .Produces(404)
-            .Produces(401)
             .WithDisplayName("Delete a store by id");
         
         routes.MapPut("/{storeId:int}", UpdateStore)
-            .Produces<ApiStore>(200)
-            .ProducesValidationProblem(400)
-            .Produces(404)
-            .Produces(401)
+            .Accepts<ApiStore>("application/json")
             .WithDisplayName("Update a store by id");
         
         routes.MapPost("/", CreateStore)
             .Accepts<ApiStore>("application/json")
-            .Produces<ApiStore>(201)
-            .ProducesValidationProblem(400)
-            .Produces(401)
             .WithDisplayName("Create a store");
 
         return app;
     }
 
-    private static async Task<IResult> GetAllStores(ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<Results<Ok<IEnumerable<ApiStore>>, Unauthorized>> GetAllStores(ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
@@ -62,11 +49,11 @@ public static class GroceryStoreEndpoints
             .AsNoTracking()
             .ToListAsync();
         
-        return Results.Ok(stores.Select(store => 
+        return TypedResults.Ok(stores.Select(store =>
             new ApiStore(store.Id, store.Name, store.Description)));
     }
 
-    private static async Task<IResult> GetStore([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<Results<Ok<ApiStore>, NotFound, Unauthorized>> GetStore([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
@@ -74,55 +61,55 @@ public static class GroceryStoreEndpoints
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
-        if (store == null) return Results.NotFound();
+        if (store == null) return TypedResults.NotFound();
         
-        return Results.Ok(
+        return TypedResults.Ok(
             new ApiStore(store.Id, store.Name, store.Description));
     }
 
-    private static async Task<IResult> DeleteStore([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
+    private static async Task<Results<Ok, NotFound, Unauthorized>> DeleteStore([FromRoute]int storeId, ClaimsPrincipal principal, GroceryListDb db)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var store = await db.Stores
             .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
-        if (store == null) return Results.NotFound();
+        if (store == null) return TypedResults.NotFound();
 
         db.Stores.Remove(store);
         await db.SaveChangesAsync();
         
-        return Results.Ok();
+        return TypedResults.Ok();
     }
 
-    private static async Task<IResult> UpdateStore([FromRoute]int storeId, [FromBody]ApiStore apiStore, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
+    private static async Task<Results<Accepted<ApiStore>, ValidationProblem, NotFound, Unauthorized>> UpdateStore([FromRoute]int storeId, [FromBody]ApiStore apiStore, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
         var store = await db.Stores
             .FirstOrDefaultAsync(s => s.Id == storeId && s.UserId == userId);
 
-        if (store == null) return Results.NotFound();
+        if (store == null) return TypedResults.NotFound();
         
         if (!MiniValidator.TryValidate(apiStore, out var validationErrors))
         {
-            return Results.ValidationProblem(validationErrors);
+            return TypedResults.ValidationProblem(validationErrors);
         }
 
         store.Name = apiStore.Name;
         store.Description = apiStore.Description;
         await db.SaveChangesAsync();
 
-        return Results.Accepted(
+        return TypedResults.Accepted(
             link.GetUriByName(http, ById, new { storeId = store.Id })!, 
             new ApiStore(store.Id, store.Name, store.Description));
     }
 
-    private static async Task<IResult> CreateStore([FromBody]ApiStore apiStore, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
+    private static async Task<Results<Created<ApiStore>, ValidationProblem, NotFound, Unauthorized>> CreateStore([FromBody]ApiStore apiStore, ClaimsPrincipal principal, GroceryListDb db, HttpContext http, LinkGenerator link)
     {
         if (!MiniValidator.TryValidate(apiStore, out var validationErrors))
         {
-            return Results.ValidationProblem(validationErrors);
+            return TypedResults.ValidationProblem(validationErrors);
         }
         
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
@@ -135,7 +122,7 @@ public static class GroceryStoreEndpoints
         db.Stores.Add(store);
         await db.SaveChangesAsync();
 
-        return Results.Created(
+        return TypedResults.Created(
             link.GetUriByName(http, ById, new { storeId = store.Id })!, 
             new ApiStore(store.Id, store.Name, store.Description));
     }

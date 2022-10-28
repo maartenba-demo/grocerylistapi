@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using GroceryListApi.Endpoints.Schemas;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MiniValidation;
@@ -12,11 +13,15 @@ public static class AuthenticationEndpoints
 {
     public static WebApplication MapAuthenticationEndpoints(this WebApplication app)
     {
-        app.MapPost("/token", async (ApiUser apiUser, GroceryListDb db, IConfiguration configuration) => 
+        app.MapPost("/token",
+                async Task<Results<Ok<ApiToken>, Unauthorized>>(
+                ApiUser apiUser,
+                GroceryListDb db,
+                IConfiguration configuration) =>
             {
                 if (!MiniValidator.TryValidate(apiUser, out _))
                 {
-                    return Results.Unauthorized();
+                    return Results.Extensions.UnauthorizedTypedResult();
                 }
 
                 var user = await db.Users
@@ -24,7 +29,7 @@ public static class AuthenticationEndpoints
                     .FirstOrDefaultAsync(u => u.Username == apiUser.Username);
                 if (user == null)
                 {
-                    return Results.Unauthorized();
+                    return Results.Extensions.UnauthorizedTypedResult();
                 }
 
                 var claims = new[]
@@ -42,17 +47,17 @@ public static class AuthenticationEndpoints
                     expires: DateTime.UtcNow.AddDays(60),
                     notBefore: DateTime.UtcNow,
                     signingCredentials: new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SigningKey"] ?? throw new NullReferenceException("The value for 'SigningKey' must be specified in appsettings.json"))),
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SigningKey"] ??
+                                                                        throw new NullReferenceException(
+                                                                            "The value for 'SigningKey' must be specified in appsettings.json"))),
                         SecurityAlgorithms.HmacSha256)
                 );
 
-                return Results.Ok(
+                return TypedResults.Ok(
                     new ApiToken(new JwtSecurityTokenHandler().WriteToken(token)));
             })
             .AllowAnonymous()
-            .WithTags("Authentication")
-            .Produces(200)
-            .Produces(401);
+            .WithTags("Authentication");
 
         return app;
     }
