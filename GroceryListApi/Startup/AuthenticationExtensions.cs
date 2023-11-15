@@ -32,7 +32,7 @@ public static class AuthenticationExtensions
                     ValidIssuer = builder.Configuration["Issuer"],
                     ValidAudience = builder.Configuration["Audience"],
                     IssuerSigningKey =
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]))
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey"]!))
                 };
 
                 options.Events = new JwtBearerEvents
