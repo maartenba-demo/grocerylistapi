@@ -44,6 +44,10 @@ public static class GroceryStoreEndpoints
     {
         var userId = int.Parse(principal.GetClaimValue(GroceryClaimTypes.UserId));
 
+        // var stores = await db.Stores
+        //     .FromSqlInterpolated($"SELECT * FROM Stores WHERE UserId = '{userId}'")
+        //     .ToListAsync();
+
         var stores = await db.Stores
             .Where(s => s.UserId == userId)
             .AsNoTracking()
